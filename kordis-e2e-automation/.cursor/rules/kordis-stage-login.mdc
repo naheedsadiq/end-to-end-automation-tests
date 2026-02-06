@@ -1,0 +1,29 @@
+---
+description: Stage login URL and Kordis e2e login conventions
+globs: cypress/**/*
+alwaysApply: false
+---
+
+# Kordis Stage Login
+
+## Stage environment
+
+- **Login URL**: https://stage.app.kordis.io/login
+- **Base URL**: https://stage.app.kordis.io
+
+Use these for e2e login tests and config so specs run against stage.
+
+## Where to set them
+
+- **cypress.config.js**: Keep `e2e.baseUrl` as `https://stage.app.kordis.io`.
+- **cypress/fixtures/example.json**: Use `url.Live` (or equivalent) for the stage base or login URL, e.g. `https://stage.app.kordis.io/` or `https://stage.app.kordis.io/login`.
+- **Login-page.js**: `OpenURL` should receive the URL from fixtures or config; do not hardcode a different base in page objects.
+
+## Login flow (stage)
+
+- Email: `input#email`
+- Password: `#password`
+- Submit: `.authButton` or `.login-submit-btn` (use `.first()` if both exist)
+- Logout: `#logout-form > .sc-iTOPbJ` (prefer a stable `data-*` selector when available)
+
+When adding or changing login specs, keep credentials in fixtures (e.g. `example.json`) and do not commit real production credentials.

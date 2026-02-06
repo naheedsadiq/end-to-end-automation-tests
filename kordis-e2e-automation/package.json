@@ -1,0 +1,21 @@
+{
+  "name": "fluxshop",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:headed": "cypress run --headed",
+    "test:chrome": "cypress run --browser chrome",
+    "test:spec": "cypress run --spec"
+  },
+  "keywords": [],
+  "author": "Naheed Anjum",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "cypress": "^13.6.1",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-table": "^1.0.2"
+  }
+}

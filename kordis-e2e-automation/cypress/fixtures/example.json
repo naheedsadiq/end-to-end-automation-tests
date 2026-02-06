@@ -1,0 +1,17 @@
+{
+
+  "url":{
+    "Live":"https://stage.app.kordis.io/",
+    "Livef1":"https://f1.app.kordis.io/login"
+     },
+
+     "username":{
+      "kordisuser":"admin@kordis.io"
+  },
+  
+  "password":{
+      "kordispass":"xcu!mnw1twh.GAC.jkg"
+      
+  }
+
+}
