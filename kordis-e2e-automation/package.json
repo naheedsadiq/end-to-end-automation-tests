@@ -7,7 +7,7 @@
     "test:open": "cypress open",
     "test:headed": "cypress run --headed",
     "test:chrome": "cypress run --browser chrome",
-    "test:spec": "cypress run --spec"
+    "test:spec": "cypress run"
   },
   "keywords": [],
   "author": "Naheed Anjum",
