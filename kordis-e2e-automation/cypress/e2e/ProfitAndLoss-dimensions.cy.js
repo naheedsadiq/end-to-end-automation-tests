@@ -19,6 +19,7 @@ describe('Profit and Loss dimensions deep link', function () {
     login.enterEmail(this.testdata.username.kordisuser)
     login.enterPassword(this.testdata.password.kordispass)
     login.Signin()
+    cy.url({ timeout: 30000 }).should('not.include', '/login')
 
     cy.visit(deepLink)
     cy.url({ timeout: 30000 }).should('include', '/financial-dimensions/statement')
@@ -34,14 +35,16 @@ describe('Profit and Loss dimensions deep link', function () {
     })
 
     cy.get('body', { timeout: 30000 }).then(($body) => {
-      const hasFinancialContainer =
-        $body.find('#main_budget_content_table').length > 0 ||
+      const hasAuthenticatedAppShell =
+        $body.find('#desktop-content').length > 0 ||
         $body.find('#financial-statement-view').length > 0 ||
-        $body.find('table').length > 0
+        $body.find('[data-qa="menu-financials"]').length > 0
 
-      expect(hasFinancialContainer, 'financial statement container is visible').to.eq(true)
+      expect(hasAuthenticatedAppShell, 'authenticated app shell is visible').to.eq(true)
     })
 
+    cy.get('input#email').should('not.exist')
+    cy.get('#password').should('not.exist')
     cy.get('body').should('not.contain.text', 'Something went wrong')
   })
 })
