@@ -7,7 +7,8 @@
     "test:open": "cypress open",
     "test:headed": "cypress run --headed",
     "test:chrome": "cypress run --browser chrome",
-    "test:spec": "cypress run --spec"
+    "test:spec": "cypress run --spec",
+    "test:login:stage": "cypress run --spec cypress/e2e/Login.stage.cy.js"
   },
   "keywords": [],
   "author": "Naheed Anjum",
