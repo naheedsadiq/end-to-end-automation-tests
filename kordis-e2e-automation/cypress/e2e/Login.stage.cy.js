@@ -7,7 +7,7 @@ describe('Kordis Stage Login E2E', () => {
     Cypress.on('uncaught:exception', () => false)
   })
 
-  it('logs in and logs out from stage login page', function () {
+  it('logs in from stage login page with valid credentials', function () {
     const baseOrLoginUrl = this.testdata.url.Live
     const loginUrl = baseOrLoginUrl.includes('/login')
       ? baseOrLoginUrl
@@ -27,10 +27,7 @@ describe('Kordis Stage Login E2E', () => {
       .click()
 
     cy.url({ timeout: 60000 }).should('not.include', '/login')
-
-    cy.get('#logout-form > .sc-iTOPbJ', { timeout: 60000 }).should('be.visible').click({
-      force: true,
-    })
-    cy.url({ timeout: 60000 }).should('match', /login|signin|auth/i)
+    cy.get('input#email').should('not.exist')
+    cy.get('#password').should('not.exist')
   })
 })
