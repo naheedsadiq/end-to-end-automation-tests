@@ -27,6 +27,7 @@ describe('Kordis Stage Login E2E', () => {
       .click()
 
     cy.url({ timeout: 60000 }).should('not.include', '/login')
+    cy.get('body').should('not.contain', 'Application Error')
     cy.get('input#email').should('not.exist')
     cy.get('#password').should('not.exist')
   })
