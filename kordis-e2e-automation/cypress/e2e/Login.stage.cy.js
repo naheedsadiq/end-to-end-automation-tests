@@ -1,10 +1,19 @@
 describe('Kordis Stage Login E2E', () => {
+  before(() => {
+    Cypress.on('uncaught:exception', (err) => {
+      // Stage dashboard intermittently throws this known client-side error.
+      if (
+        err.message.includes('Waves is not defined') ||
+        err.message.includes("Cannot read properties of undefined (reading 'top')")
+      ) {
+        return false
+      }
+    })
+  })
+
   beforeEach(() => {
     cy.fixture('example').as('testdata')
     cy.viewport(1400, 760)
-
-    // Keep tests resilient to non-critical third-party script errors.
-    Cypress.on('uncaught:exception', () => false)
   })
 
   it('logs in from stage login page with valid credentials', function () {
@@ -26,7 +35,10 @@ describe('Kordis Stage Login E2E', () => {
       .and('not.be.disabled')
       .click()
 
-    cy.url({ timeout: 60000 }).should('not.include', '/login')
+    cy.location('pathname', { timeout: 60000 }).should((pathname) => {
+      expect(pathname).to.not.equal('/login')
+      expect(pathname).to.match(/\/analytics(\/\d+)?$/)
+    })
     cy.get('body').should('not.contain', 'Application Error')
     cy.get('input#email').should('not.exist')
     cy.get('#password').should('not.exist')
