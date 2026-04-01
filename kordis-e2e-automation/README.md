@@ -13,6 +13,20 @@ This project contains Cypress end-to-end tests for the Kordis stage environment.
 npm install
 ```
 
+## One-command setup
+
+Bootstrap and verify the Web E2E environment:
+
+```bash
+npm run setup:web-e2e
+```
+
+Run setup + smoke login test:
+
+```bash
+SETUP_RUN_SMOKE=1 npm run setup:web-e2e
+```
+
 ## Run tests
 
 From the project root (`kordis-e2e-automation`):

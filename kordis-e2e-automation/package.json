@@ -8,7 +8,8 @@
     "test:headed": "cypress run --headed",
     "test:chrome": "cypress run --browser chrome",
     "test:spec": "cypress run --spec \"${CYPRESS_SPEC:-cypress/e2e/Login.cy.js}\"",
-    "test:bulk": "bash scripts/run_bulk_e2e.sh"
+    "test:bulk": "bash scripts/run_bulk_e2e.sh",
+    "setup:web-e2e": "bash scripts/setup_web_e2e.sh"
   },
   "keywords": [],
   "author": "Naheed Anjum",

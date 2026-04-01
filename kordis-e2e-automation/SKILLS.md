@@ -2,6 +2,54 @@
 
 This file defines reusable skills (SOPs) for agent-driven work in this repo.
 
+## Skill: Web E2E Automation Setup Bootstrap
+
+### When to use
+- Use this skill when setting up a new machine/agent for Cypress web E2E.
+- Use this before first-time execution of `test:spec` or `test:bulk`.
+
+### Goal
+- Ensure dependencies are installed and Cypress binary is ready.
+- Validate baseline config (`baseUrl`) and spec discovery.
+- Optionally run a smoke spec to confirm end-to-end setup.
+
+### Commands
+From `kordis-e2e-automation`:
+
+1) Bootstrap setup only:
+```bash
+npm run setup:web-e2e
+```
+
+2) Setup + smoke run:
+```bash
+SETUP_RUN_SMOKE=1 npm run setup:web-e2e
+```
+
+3) Setup + custom smoke spec:
+```bash
+SETUP_RUN_SMOKE=1 SETUP_SMOKE_SPEC=cypress/e2e/Login.negative.scenario.cy.js npm run setup:web-e2e
+```
+
+### Runtime controls
+- `SETUP_RUN_SMOKE` (default: `0`)
+- `SETUP_SMOKE_SPEC` (default: `cypress/e2e/Login.cy.js`)
+- `SETUP_REPORT_DIR` (default: `.artifacts/setup-web-e2e`)
+
+### Success criteria
+- Script exits `0`.
+- Cypress verify succeeds.
+- Setup summary file is created at `.artifacts/setup-web-e2e/setup_summary.txt`.
+- If smoke is enabled, smoke spec passes with `Failing: 0`.
+
+### Failure handling
+- If dependencies fail to install: fix npm/network issues and rerun.
+- If Cypress verify fails: rerun `npx cypress verify`; if needed reinstall deps.
+- If smoke fails: rerun the same spec with `npm run test:spec` and inspect test output.
+
+### Output
+- `.artifacts/setup-web-e2e/setup_summary.txt` with node/npm/baseUrl/spec count and smoke settings.
+
 ## Skill: Bulk Cypress E2E Stable Runner
 
 ### When to use
