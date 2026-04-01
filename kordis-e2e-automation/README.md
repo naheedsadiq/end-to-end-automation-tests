@@ -1,29 +1,73 @@
-# README #
+# Kordis Cypress E2E Automation
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This project contains Cypress end-to-end tests for the Kordis stage environment.
 
-### What is this repository for? ###
+## Prerequisites
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+- Node.js 18+ (Node 22 is supported)
+- npm
 
-### How do I get set up? ###
+## Install dependencies
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+```bash
+npm install
+```
 
-### Contribution guidelines ###
+## One-command setup
 
-* Writing tests
-* Code review
-* Other guidelines
+Bootstrap and verify the Web E2E environment:
 
-### Who do I talk to? ###
+```bash
+npm run setup:web-e2e
+```
 
-* Repo owner or admin
-* Other community or team contact
+Run setup + smoke login test:
+
+```bash
+SETUP_RUN_SMOKE=1 npm run setup:web-e2e
+```
+
+## Run tests
+
+From the project root (`kordis-e2e-automation`):
+
+- Run all specs (headless):
+
+  ```bash
+  npm test
+  ```
+
+- Open Cypress UI:
+
+  ```bash
+  npm run test:open
+  ```
+
+- Run all specs in headed mode:
+
+  ```bash
+  npm run test:headed
+  ```
+
+- Run all specs in Chrome:
+
+  ```bash
+  npm run test:chrome
+  ```
+
+- Run a single spec (defaults to login spec):
+
+  ```bash
+  npm run test:spec
+  ```
+
+  Override the target spec path:
+
+  ```bash
+  CYPRESS_SPEC=cypress/e2e/Reports.cy.js npm run test:spec
+  ```
+
+## Environment
+
+- Base URL is configured in `cypress.config.js` as:
+  - `https://stage.app.kordis.io`

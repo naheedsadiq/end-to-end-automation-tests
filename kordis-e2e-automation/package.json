@@ -7,14 +7,16 @@
     "test:open": "cypress open",
     "test:headed": "cypress run --headed",
     "test:chrome": "cypress run --browser chrome",
-    "test:spec": "cypress run --spec"
+    "test:spec": "cypress run --spec \"${CYPRESS_SPEC:-cypress/e2e/Login.cy.js}\"",
+    "test:bulk": "bash scripts/run_bulk_e2e.sh",
+    "setup:web-e2e": "bash scripts/setup_web_e2e.sh"
   },
   "keywords": [],
   "author": "Naheed Anjum",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "cypress": "^13.6.1",
+    "cypress": "^13.13.3",
     "cypress-file-upload": "^5.0.8",
     "cypress-table": "^1.0.2"
   }
