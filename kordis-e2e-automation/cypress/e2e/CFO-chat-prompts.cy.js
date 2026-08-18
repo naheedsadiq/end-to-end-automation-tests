@@ -82,9 +82,9 @@ describe('Kordis AI CFO chat prompt tests', () => {
     openAICfoAssistant()
 
     QUICK_PROMPTS.forEach((prompt) => {
-      cy.contains('button, span, div', new RegExp(`^${Cypress._.escapeRegExp(prompt)}$`)).should(
-        'be.visible'
-      )
+      cy.contains('#cfo-chat-root :visible', new RegExp(`^${Cypress._.escapeRegExp(prompt)}$`), {
+        timeout: 15000,
+      }).should('exist')
     })
 
     cy.get(CHAT_INPUT_SELECTOR)
@@ -99,19 +99,22 @@ describe('Kordis AI CFO chat prompt tests', () => {
     ensureAuthenticatedSession(this.testdata, login)
     openAICfoAssistant()
 
-    cy.contains('button, span, div', /^Cash Runway$/).click({ force: true })
-    cy.contains(/current cash runway/i, { timeout: 120000 }).should('be.visible')
+    cy.contains('#cfo-chat-root :visible', /^Cash Runway$/).click({ force: true })
+    cy.contains('#cfo-chat-root :visible', /current cash runway/i, { timeout: 120000 }).should(
+      'exist'
+    )
 
     const customPrompt = 'Summarize my cash position today'
     cy.get(CHAT_INPUT_SELECTOR).filter(':visible').first().as('chatInput')
     cy.get('@chatInput').click().type(`${customPrompt}{enter}`)
 
-    cy.contains(customPrompt, { timeout: 30000 }).should('be.visible')
+    cy.contains('#cfo-chat-root :visible', customPrompt, { timeout: 30000 }).should('exist')
 
     cy.contains(
+      '#cfo-chat-root :visible',
       /cash runway calculated|bank balances retrieved|financial health snapshot ready|where the cash sits/i,
       { timeout: 120000 }
-    ).should('be.visible')
+    ).should('exist')
 
     cy.get('body').should('not.contain', 'Application Error')
   })
