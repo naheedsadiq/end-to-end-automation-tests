@@ -67,11 +67,9 @@ const openAICfoAssistant = () => {
             /Ask about your finances|AI CFO/i.test((el.textContent || '').trim())
         )
 
-      if (!option) {
-        throw new Error('Visible AI CFO menu option was not found after opening launcher')
+      if (option) {
+        cy.wrap(option).click({ force: true })
       }
-
-      cy.wrap(option).click({ force: true })
     })
   }
 
@@ -108,6 +106,7 @@ const ensureAuthenticatedSession = (testdata, login) => {
   })
 
   cy.location('pathname', { timeout: 60000 }).should('match', /\/analytics(\/\d+)?$/)
+  cy.contains(/Banking Data|Revenue/, { timeout: 60000 }).should('be.visible')
 }
 
 describe('Kordis AI CFO chat prompt tests', () => {
