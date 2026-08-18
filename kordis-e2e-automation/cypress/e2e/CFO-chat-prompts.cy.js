@@ -23,28 +23,15 @@ const getStageLoginUrl = (urlFromFixture) => {
 }
 
 const openAICfoAssistant = () => {
-  cy.get('body').then(($body) => {
-    const hasVisibleInput = $body.find(`${CHAT_INPUT_SELECTOR}:visible`).length > 0
+  cy.get('button[aria-label="Open chat menu"]', { timeout: 30000 })
+    .filter(':visible')
+    .first()
+    .click({ force: true })
 
-    if (hasVisibleInput) {
-      return
-    }
-
-    const hasVisibleMenuOption =
-      $body.find('button[role="menuitem"][aria-label="Open AI CFO chat"]:visible').length > 0
-
-    if (!hasVisibleMenuOption) {
-      cy.get('button[aria-label="Open chat menu"]', { timeout: 30000 })
-        .filter(':visible')
-        .first()
-        .click({ force: true })
-    }
-
-    cy.get('button[role="menuitem"][aria-label="Open AI CFO chat"]', { timeout: 30000 })
-      .filter(':visible')
-      .first()
-      .click({ force: true })
-  })
+  cy.get('button[role="menuitem"][aria-label="Open AI CFO chat"]', { timeout: 30000 })
+    .filter(':visible')
+    .first()
+    .click({ force: true })
 
   cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should(($inputs) => {
     expect($inputs.filter(':visible').length).to.be.greaterThan(0)
