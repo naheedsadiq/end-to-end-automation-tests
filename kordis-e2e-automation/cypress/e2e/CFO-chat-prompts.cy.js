@@ -24,6 +24,57 @@ const getStageLoginUrl = (urlFromFixture) => {
 }
 
 const openAICfoAssistant = () => {
+  const clickBottomRightLauncher = () => {
+    cy.window().then((win) => {
+      const points = [
+        [win.innerWidth - 24, win.innerHeight - 24],
+        [win.innerWidth - 40, win.innerHeight - 40],
+        [win.innerWidth - 60, win.innerHeight - 60],
+      ]
+
+      let launcher
+      points.some(([x, y]) => {
+        const elementAtPoint = win.document.elementFromPoint(x, y)
+        if (!elementAtPoint) {
+          return false
+        }
+
+        const clickable = elementAtPoint.closest('button, [role="button"], a, div')
+        if (!clickable || clickable === win.document.body) {
+          return false
+        }
+
+        launcher = clickable
+        return true
+      })
+
+      if (!launcher) {
+        throw new Error('AI CFO launcher element not found in bottom-right corner')
+      }
+
+      cy.wrap(launcher).click({ force: true })
+    })
+  }
+
+  const clickVisibleAiCfoMenuOption = () => {
+    cy.get('body', { timeout: 20000 }).then(($body) => {
+      const option = $body
+        .find('button, [role="button"], a, div, span, p')
+        .toArray()
+        .find(
+          (el) =>
+            Cypress.$(el).is(':visible') &&
+            /Ask about your finances|AI CFO/i.test((el.textContent || '').trim())
+        )
+
+      if (!option) {
+        throw new Error('Visible AI CFO menu option was not found after opening launcher')
+      }
+
+      cy.wrap(option).click({ force: true })
+    })
+  }
+
   cy.get('body').then(($body) => {
     const hasVisibleInput = $body
       .find(CHAT_INPUT_SELECTOR)
@@ -34,39 +85,9 @@ const openAICfoAssistant = () => {
       return
     }
 
-    cy.window().then((win) => {
-      const launcher = [...win.document.querySelectorAll('button, [role="button"]')]
-        .filter((el) => {
-          const rect = el.getBoundingClientRect()
-          const styles = win.getComputedStyle(el)
-          const isVisible =
-            rect.width > 0 &&
-            rect.height > 0 &&
-            styles.display !== 'none' &&
-            styles.visibility !== 'hidden'
-          const isNearBottomRight =
-            rect.right > win.innerWidth - 200 && rect.bottom > win.innerHeight - 200
-          return isVisible && isNearBottomRight
-        })
-        .sort((a, b) => {
-          const aRect = a.getBoundingClientRect()
-          const bRect = b.getBoundingClientRect()
-          return bRect.bottom + bRect.right - (aRect.bottom + aRect.right)
-        })[0]
-
-      if (!launcher) {
-        throw new Error('AI CFO launcher button not found on analytics page')
-      }
-
-      cy.wrap(launcher).click({ force: true })
-    })
+    clickBottomRightLauncher()
+    clickVisibleAiCfoMenuOption()
   })
-
-  cy.contains('button, [role="button"], div, span, p', /Ask about your finances|AI CFO/i, {
-    timeout: 20000,
-  })
-    .should('be.visible')
-    .click({ force: true })
 
   cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should(($inputs) => {
     const hasVisibleInput = $inputs.toArray().some((el) => Cypress.$(el).is(':visible'))
