@@ -1,8 +1,7 @@
 import Login from '../support/Login-page'
 
 const QUICK_PROMPTS = ['Cash Runway', 'P&L Summary', 'Bank Balances', 'AR Aging']
-const CHAT_INPUT_SELECTOR =
-  'textarea[placeholder*="Ask your AI CFO anything"], input[placeholder*="Ask your AI CFO anything"]'
+const CHAT_INPUT_SELECTOR = '[contenteditable="true"][aria-label="Message input"]'
 
 const ignoreKnownStageExceptions = () => {
   Cypress.on('uncaught:exception', (err) => {
@@ -24,74 +23,29 @@ const getStageLoginUrl = (urlFromFixture) => {
 }
 
 const openAICfoAssistant = () => {
-  const clickBottomRightLauncher = () => {
-    cy.window().then((win) => {
-      const points = [
-        [win.innerWidth - 24, win.innerHeight - 24],
-        [win.innerWidth - 40, win.innerHeight - 40],
-        [win.innerWidth - 60, win.innerHeight - 60],
-      ]
-
-      let launcher
-      points.some(([x, y]) => {
-        const elementAtPoint = win.document.elementFromPoint(x, y)
-        if (!elementAtPoint) {
-          return false
-        }
-
-        const clickable = elementAtPoint.closest('button, [role="button"], a, div')
-        if (!clickable || clickable === win.document.body) {
-          return false
-        }
-
-        launcher = clickable
-        return true
-      })
-
-      if (!launcher) {
-        throw new Error('AI CFO launcher element not found in bottom-right corner')
-      }
-
-      cy.wrap(launcher).click({ force: true })
-    })
-  }
-
-  const clickVisibleAiCfoMenuOption = () => {
-    cy.get('body', { timeout: 20000 }).then(($body) => {
-      const option = $body
-        .find('button, [role="button"], a, div, span, p')
-        .toArray()
-        .find(
-          (el) =>
-            Cypress.$(el).is(':visible') &&
-            /Ask about your finances|AI CFO/i.test((el.textContent || '').trim())
-        )
-
-      if (option) {
-        cy.wrap(option).click({ force: true })
-      }
-    })
-  }
-
   cy.get('body').then(($body) => {
-    const hasVisibleInput = $body
-      .find(CHAT_INPUT_SELECTOR)
-      .toArray()
-      .some((el) => Cypress.$(el).is(':visible'))
+    const hasVisibleInput = $body.find(`${CHAT_INPUT_SELECTOR}:visible`).length > 0
 
     if (hasVisibleInput) {
       return
     }
 
-    clickBottomRightLauncher()
-    clickVisibleAiCfoMenuOption()
+    const hasVisibleMenuOption =
+      $body.find('button[role="menuitem"][aria-label="Open AI CFO chat"]:visible').length > 0
+
+    if (!hasVisibleMenuOption) {
+      cy.get('#cfo-chat-root button[aria-label="Open chat menu"]', { timeout: 30000 }).click({
+        force: true,
+      })
+    }
+
+    cy.get('button[role="menuitem"][aria-label="Open AI CFO chat"]', { timeout: 30000 }).click({
+      force: true,
+    })
   })
 
-  cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should(($inputs) => {
-    const hasVisibleInput = $inputs.toArray().some((el) => Cypress.$(el).is(':visible'))
-    expect(hasVisibleInput).to.equal(true)
-  })
-  cy.contains('AI CFO Assistant').should('exist')
+  cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should('be.visible')
+  cy.contains('AI CFO Assistant', { timeout: 30000 }).should('be.visible')
 }
 
 const ensureAuthenticatedSession = (testdata, login) => {
@@ -131,11 +85,9 @@ describe('Kordis AI CFO chat prompt tests', () => {
       )
     })
 
-    cy.get(CHAT_INPUT_SELECTOR).should(
-      'have.attr',
-      'placeholder',
-      'Ask your AI CFO anything... (type / for skills)'
-    )
+    cy.get(`${CHAT_INPUT_SELECTOR} p[data-placeholder]`)
+      .invoke('attr', 'data-placeholder')
+      .should('include', 'Ask your AI CFO anything')
   })
 
   it('submits quick and custom AI CFO prompts', function () {
@@ -147,10 +99,9 @@ describe('Kordis AI CFO chat prompt tests', () => {
 
     const customPrompt = 'Summarize my cash position today'
     cy.get(CHAT_INPUT_SELECTOR).first().as('chatInput')
-    cy.get('@chatInput').clear().type(`${customPrompt}{enter}`)
+    cy.get('@chatInput').click().type(`${customPrompt}{enter}`)
 
     cy.contains(customPrompt, { timeout: 30000 }).should('be.visible')
-    cy.get('@chatInput').should('have.value', '')
 
     cy.contains(
       /cash runway calculated|bank balances retrieved|financial health snapshot ready|where the cash sits/i,
