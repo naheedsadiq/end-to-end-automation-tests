@@ -22,7 +22,6 @@ const getStageLoginUrl = (urlFromFixture) => {
 }
 
 const openAICfoAssistant = () => {
-  const hasVisibleInput = ($scope) => $scope.find(`${CHAT_INPUT_SELECTOR}:visible`).length > 0
   const clickBottomRightCornerFallback = () => {
     cy.window().then((win) => {
       const elementAtPoint = win.document.elementFromPoint(win.innerWidth - 24, win.innerHeight - 24)
@@ -34,10 +33,6 @@ const openAICfoAssistant = () => {
   }
 
   cy.get('body').then(($body) => {
-    if (hasVisibleInput($body)) {
-      return
-    }
-
     const launcher = $body.find('button[aria-label="Open chat menu"]:visible').first()
     if (launcher.length) {
       cy.wrap(launcher).click({ force: true })
@@ -48,10 +43,6 @@ const openAICfoAssistant = () => {
   })
 
   cy.get('body').then(($body) => {
-    if (hasVisibleInput($body)) {
-      return
-    }
-
     const aiCfoMenuOption = $body
       .find('button[role="menuitem"][aria-label="Open AI CFO chat"]:visible')
       .first()
