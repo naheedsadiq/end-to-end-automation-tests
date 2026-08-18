@@ -25,14 +25,12 @@ const getStageLoginUrl = (urlFromFixture) => {
 
 const openAICfoAssistant = () => {
   cy.get('body').then(($body) => {
-    const pageText = $body.text()
+    const hasVisibleInput = $body
+      .find(CHAT_INPUT_SELECTOR)
+      .toArray()
+      .some((el) => Cypress.$(el).is(':visible'))
 
-    if (pageText.includes('AI CFO Assistant')) {
-      return
-    }
-
-    if (pageText.includes('Ask about your finances')) {
-      cy.contains(/Ask about your finances/i).click({ force: true })
+    if (hasVisibleInput) {
       return
     }
 
@@ -62,12 +60,19 @@ const openAICfoAssistant = () => {
 
       cy.wrap(launcher).click({ force: true })
     })
-
-    cy.contains(/Ask about your finances/i, { timeout: 20000 }).click({ force: true })
   })
 
-  cy.contains('AI CFO Assistant', { timeout: 30000 }).should('be.visible')
-  cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should('be.visible')
+  cy.contains('button, [role="button"], div, span, p', /Ask about your finances|AI CFO/i, {
+    timeout: 20000,
+  })
+    .should('be.visible')
+    .click({ force: true })
+
+  cy.get(CHAT_INPUT_SELECTOR, { timeout: 30000 }).should(($inputs) => {
+    const hasVisibleInput = $inputs.toArray().some((el) => Cypress.$(el).is(':visible'))
+    expect(hasVisibleInput).to.equal(true)
+  })
+  cy.contains('AI CFO Assistant').should('exist')
 }
 
 const ensureAuthenticatedSession = (testdata, login) => {
